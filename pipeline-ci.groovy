@@ -10,34 +10,30 @@ pipeline {
             }
         }
 
-        parallel {
-            stage('Teste unitários') {
-                agent {
-                    agent any
+        stage('Run Tests') {
+            parallel {
+                stage('Test On Windows') {
+                    agent {
+                        label "windows"
+                    }
+                    steps {
+                        echo "run-tests.bat"
+                    }
+                    post {
+                        always {
+                            echo "**/TEST-*.xml"
+                        }
+                    }
                 }
-                steps {
-                    echo "Trecho 1"
-                }
-            }
-
-            stage('Testes de aceitação') {
-                agent {
-                    agent any
-                }
-                steps {
-                    echo "Trecho 2"
-                }
-            }
-
-            stage('Testes de negócio') {
-                agent {
-                    agent any
-                }
-                steps {
-                    echo "Trecho 3"
+                stage('Test On Linux') {
+                    agent {
+                        label "linux"
+                    }
+                    steps {
+                        echo "run-tests.sh"
+                    }
                 }
             }
-
         }
 
         stage('Deploy to Stage') {
